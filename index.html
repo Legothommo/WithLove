@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Для тебя</title>
+
+<!-- Apple-style шрифт -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    background: #000;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* мягкое glow */
+body::before {
+    content: "";
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, #ff2d55 0%, transparent 70%);
+    filter: blur(140px);
+    opacity: 0.5;
+    animation: pulse 4s infinite alternate;
+}
+
+@keyframes pulse {
+    from { opacity: 0.4; transform: scale(1);}
+    to { opacity: 0.7; transform: scale(1.2);}
+}
+
+/* карточка */
+.card {
+    position: relative;
+    padding: 60px;
+    border-radius: 28px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(25px);
+    text-align: center;
+    max-width: 400px;
+}
+
+/* плавное появление */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    filter: blur(10px);
+    animation: reveal 1.5s ease forwards;
+}
+
+@keyframes reveal {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+h1 {
+    font-weight: 600;
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+p {
+    font-weight: 400;
+    font-size: 18px;
+    opacity: 0.7;
+}
+
+/* кнопки */
+.buttons {
+    margin-top: 30px;
+    position: relative;
+    height: 60px;
+}
+
+button {
+    margin-top: 30px;
+    padding: 12px 28px;
+    font-size: 16px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.yes {
+    background: #fff;
+    color: #000;
+}
+
+.yes:hover {
+    transform: scale(1.1);
+}
+
+.no {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    position: absolute;
+}
+.petal {
+    position: absolute;
+    font-size: 20px;
+    animation: fall linear forwards;
+    pointer-events: none;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+.flower {
+    position: absolute;
+    font-size: 24px;
+    pointer-events: none;
+    animation: flowerFly 2s ease-out forwards;
+}
+
+@keyframes flowerFly {
+    0% {
+        opacity: 1;
+        transform: translate(0,0) scale(0.5);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--x), var(--y)) scale(1.5);
+    }
+}
+.heart {
+    font-size: 80px;
+    color: #ff2d55;
+    animation: pulseHeart 1s infinite;
+    margin: 0;
+    opacity: 1; 
+}
+
+@keyframes pulseHeart {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+</style>
+</head>
+<body>
+
+<div style="position:absolute"></div>
+
+<div class="card" id="card">
+    <h1 class="reveal">Алёночка</h1>
+    <p class="reveal" style="animation-delay:0.3s">У меня есть кое-что важное для тебя.</p>
+    <button class="yes reveal" style="animation-delay:0.6s" onclick="start()">Открыть</button>
+</div>
+
+<!-- музыка -->
+<audio id="music" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+<audio id="saluteSound">
+    <source src="salute.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+let step = 0;
+let musicStarted = false;
+
+
+function start() {
+    if (!musicStarted) {
+        document.getElementById("music").play();
+	document.getElementById("music").volume = 0.2;
+        musicStarted = true;
+	
+    }
+
+    nextStep();
+}
+
+function nextStep() {
+
+    const card = document.getElementById("card");
+    card.classList.remove("fade");
+    void card.offsetWidth;
+    card.classList.add("fade");
+
+    if (step === 0) {
+        card.innerHTML = `
+<h1 class="reveal">Ты невероятная.</h1>
+            <p class="reveal" style="animation-delay:0.3s">
+                Рядом с тобой всё становится светлее.
+            </p>
+            <button class="yes reveal" style="animation-delay:0.6s" onclick="nextStep()">Дальше</button>
+        `;
+    }
+
+    else if (step === 1) {
+        card.innerHTML = `
+            <h1 class="reveal">Алёночка…</h1>
+            <p class="reveal" style="animation-delay:0.3s">
+                Я хочу быть рядом с тобой ❤️
+            </p>
+            <button class="yes reveal" style="animation-delay:0.6s" onclick="nextStep()">Дальше</button>
+        `;
+    }
+
+    else if (step === 2) {
+        card.innerHTML = `
+             <h1 class="reveal">Будешь моей валентинкой?</h1>
+            <p class="reveal" style="animation-delay:0.3s">
+                Сегодня. Завтра. Всегда.
+            </p>
+            <div class="buttons reveal" style="animation-delay:0.6s">
+                <button class="yes" onclick="yes()">Да</button>
+                <button class="no" id="no" onmouseover="moveNo()">Нет</button>
+            </div>
+        `;
+    }
+
+    step++;
+}
+
+function yes() {
+
+    document.getElementById("saluteSound").play();
+    document.getElementById("saluteSound").volume = 0.4;
+	document.getElementById("music").volume = 0.1;
+    const card = document.getElementById("card");
+
+
+    card.innerHTML = `
+        <h1 class="heart">❤️</h1>
+        <p class="reveal" style="animation-delay:0.3s">
+            Алёночка, ты делаешь меня самым счастливым.
+        </p>
+    `;
+
+    launchFlowers();
+
+}
+
+function moveNo() {
+
+    const button = document.getElementById("no");
+
+    const x = Math.random() * 200 - 300;
+    const y = Math.random() * 100 - 100;
+
+    button.style.transform = `translate(${x}px, ${y}px)`;
+}
+
+function launchFlowers() {
+
+    setInterval(() => {
+
+        for (let i = 0; i < 8; i++) {
+
+            const flower = document.createElement("div");
+            flower.className = "flower";
+            flower.innerHTML = "🌸";
+
+            const x = (Math.random() - 0.5) * 1000 + "px";
+            const y = (Math.random() - 0.5) * 800 + "px";
+
+            flower.style.left = "50%";
+            flower.style.top = "50%";
+
+            flower.style.setProperty("--x", x);
+            flower.style.setProperty("--y", y);
+
+            document.body.firstElementChild.appendChild(flower);
+
+            setTimeout(() => flower.remove(), 2000);
+        }
+
+    }, 300);
+}
+
+setInterval(() => {
+
+    const petal = document.createElement("div");
+    petal.className = "petal";
+    petal.innerHTML = "🌸";
+
+    petal.style.left = Math.random() * 100 + "vw";
+    petal.style.top = "-20px";
+    petal.style.animationDuration = (5 + Math.random() * 5) + "s";
+
+    document.body.appendChild(petal);
+
+    setTimeout(() => petal.remove(), 10000);
+
+}, 300);
+
+
+</script>
+
+</body>
+</html>
